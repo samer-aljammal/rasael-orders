@@ -26,7 +26,7 @@ void main() {
     await tester.tap(find.text('افتح النسخة التجريبية'));
     await tester.pumpAndSettle();
 
-    expect(find.text('نسخة تجريبية'), findsOneWidget);
+    expect(find.text('تجربة'), findsOneWidget);
     expect(find.text('الطلبات المفتوحة'), findsOneWidget);
     expect(find.text('بحاجة انتباهك'), findsOneWidget);
 

@@ -168,7 +168,9 @@ class _TopBar extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
                 child: Text(
-                  'نسخة تجريبية',
+                  // Short on purpose: it shares the bar with the wordmark and
+                  // two buttons, and was truncated at 375px on the web.
+                  'تجربة',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppType.caption.copyWith(color: c.inkSecondary),
