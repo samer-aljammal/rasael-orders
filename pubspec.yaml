@@ -1,0 +1,55 @@
+name: rasael_orders
+description: "Rasael Orders: the order pipeline and business dashboard behind Rasael, an Arabic gift-page studio."
+publish_to: 'none'
+
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # State management
+  flutter_bloc: ^9.1.1
+  equatable: ^2.1.0
+
+  # Navigation
+  go_router: ^17.5.0
+
+  # Dependency injection
+  get_it: ^9.2.1
+
+  # Backend (database, auth, realtime). Optional at runtime: without keys the
+  # app runs on the in-memory demo repository.
+  supabase_flutter: ^2.8.0
+
+  # Utilities
+  intl: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Bundled, not fetched: Arabic text must render correctly on first launch
+  # and offline. Both families are SIL Open Font License (see assets/fonts).
+  fonts:
+    - family: Plex
+      fonts:
+        - asset: assets/fonts/IBMPlexSansArabic-Regular.ttf
+        - asset: assets/fonts/IBMPlexSansArabic-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/IBMPlexSansArabic-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/IBMPlexSansArabic-Bold.ttf
+          weight: 700
+    - family: Messiri
+      fonts:
+        - asset: assets/fonts/ElMessiri-Variable.ttf

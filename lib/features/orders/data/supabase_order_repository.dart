@@ -1,0 +1,32 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../domain/order.dart';
+import '../domain/order_repository.dart';
+import '../domain/order_status.dart';
+import 'order_row.dart';
+
+/// Orders in Supabase Postgres. Row-level security limits every query to
+/// the signed-in owner, so nothing here filters by user.
+class SupabaseOrderRepository implements OrderRepository {
+  SupabaseOrderRepository(this._client);
+
+  final SupabaseClient _client;
+
+  static const _table = 'orders';
+
+  @override
+  Stream<List<Order>> watchOrders() => _client
+      .from(_table)
+      .stream(primaryKey: ['id'])
+      .order('created_at', ascending: false)
+      .map((rows) => rows.map(OrderRow.fromRow).toList(growable: false));
+
+  /// Only the status is sent. The `orders_touch` trigger stamps
+  /// `updated_at`, `preview_sent_at`, `paid_at` and `delivered_at`, and
+  /// writes the history row, so two devices can never disagree on them.
+  @override
+  Future<void> moveTo(String orderId, OrderStatus status) => _client
+      .from(_table)
+      .update({'status': status.id})
+      .eq('id', orderId);
+}
