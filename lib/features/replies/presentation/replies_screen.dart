@@ -223,7 +223,10 @@ class _ReplyEditorState extends State<ReplyEditor> {
   Widget build(BuildContext context) {
     final c = context.colors;
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.viewInsetsOf(context).bottom +
+            MediaQuery.viewPaddingOf(context).bottom,
+      ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.screen,

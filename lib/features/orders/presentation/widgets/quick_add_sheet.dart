@@ -162,7 +162,10 @@ class _QuickAddSheetState extends State<QuickAddSheet> {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final insets = MediaQuery.viewInsetsOf(context).bottom;
+    // Keyboard when it's open; otherwise the system navigation bar, so the
+    // save button is never drawn underneath it.
+    final insets = MediaQuery.viewInsetsOf(context).bottom +
+        MediaQuery.viewPaddingOf(context).bottom;
     final ig = _source == OrderSource.instagram;
 
     Widget label(String text, {String? hint}) => Padding(

@@ -53,3 +53,6 @@ app.*.map.json
 
 # Built APKs for installing on the phone (they carry the backend URL/key)
 /release/
+
+# Full-size emulator captures; the README uses the resized copies
+/docs/screenshots/raw/
