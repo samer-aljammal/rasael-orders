@@ -11,4 +11,13 @@ abstract interface class OrderRepository {
   Stream<List<Order>> watchOrders();
 
   Future<void> moveTo(String orderId, OrderStatus status);
+
+  /// Saves a new order and returns it as stored. Throws
+  /// [DuplicateOrderCode] if the code is already taken.
+  Future<Order> create(OrderDraft draft);
+}
+
+class DuplicateOrderCode implements Exception {
+  const DuplicateOrderCode(this.code);
+  final String code;
 }

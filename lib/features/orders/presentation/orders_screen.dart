@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../core/routing/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
@@ -14,6 +16,7 @@ import '../domain/order.dart';
 import 'orders_cubit.dart';
 import 'widgets/attention_hero.dart';
 import 'widgets/order_line.dart';
+import 'widgets/quick_add_sheet.dart';
 import 'widgets/stage_sheet.dart';
 
 /// Home: what needs attention, then every open order.
@@ -28,6 +31,13 @@ class OrdersScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: BlocBuilder<OrdersCubit, OrdersState>(
+        buildWhen: (a, b) => a.runtimeType != b.runtimeType,
+        builder: (context, state) => state is OrdersLoaded
+            ? const _AddButton()
+            : const SizedBox.shrink(),
+      ),
       body: SafeArea(
         bottom: false,
         child: Center(
@@ -47,6 +57,64 @@ class OrdersScreen extends StatelessWidget {
                 OrdersLoaded() => _Loaded(state, onResetDemo: onResetDemo),
               },
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The one thing done many times a day, always within thumb reach.
+class _AddButton extends StatelessWidget {
+  const _AddButton();
+
+  Future<void> _add(BuildContext context) async {
+    final cubit = context.read<OrdersCubit>();
+    final messenger = ScaffoldMessenger.of(context);
+    final order = await QuickAddSheet.show(context, onSave: cubit.add);
+    if (order == null) return;
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text('انضاف ${Fmt.ltr(order.code)} · ${order.headline}'),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return Reveal(
+      index: 6,
+      offset: 24,
+      child: Pressable(
+        onTap: () => _add(context),
+        semanticLabel: 'طلب جديد',
+        child: Container(
+          height: AppSizes.buttonHeight,
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl + 4),
+          decoration: BoxDecoration(
+            color: c.accent,
+            borderRadius: BorderRadius.circular(AppRadius.pill),
+            // It floats over the list, so it earns a shadow.
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.18),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.add_rounded, size: 20, color: c.onAccent),
+              const SizedBox(width: AppSpacing.sm),
+              Text(
+                'طلب جديد',
+                style: AppType.subtitle.copyWith(color: c.onAccent),
+              ),
+            ],
           ),
         ),
       ),
@@ -202,9 +270,13 @@ class _Loaded extends StatelessWidget {
                 index: 3,
                 child: Row(
                   children: [
-                    Text(
-                      'الطلبات المفتوحة',
-                      style: AppType.section.copyWith(color: c.inkSecondary),
+                    Flexible(
+                      child: Text(
+                        'الطلبات المفتوحة',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppType.section.copyWith(color: c.inkSecondary),
+                      ),
                     ),
                     const SizedBox(width: AppSpacing.sm),
                     Text(
@@ -214,10 +286,27 @@ class _Loaded extends StatelessWidget {
                         fontFeatures: AppType.numeric.fontFeatures,
                       ),
                     ),
+                    const Spacer(),
+                    const SizedBox(width: AppSpacing.sm),
+                    TextButton(
+                      onPressed: () => context.push(Routes.history),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.sm,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('السجل · ${Fmt.number(state.orders.length)}'),
+                          const SizedBox(width: AppSpacing.xs),
+                          const Icon(Icons.arrow_forward_rounded, size: 16),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(height: AppSpacing.xs),
             ],
           ),
         ),
@@ -251,7 +340,8 @@ class _Loaded extends StatelessWidget {
             AppSpacing.screen,
             AppSpacing.xl,
             AppSpacing.screen,
-            AppSpacing.xxxl,
+            // Room for the floating add button.
+            AppSpacing.xxxl + AppSizes.buttonHeight + AppSpacing.lg,
           ),
           sliver: SliverToBoxAdapter(
             child: Text(

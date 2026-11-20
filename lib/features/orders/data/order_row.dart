@@ -1,5 +1,6 @@
 import '../domain/gift_kind.dart';
 import '../domain/order.dart';
+import '../domain/order_source.dart';
 import '../domain/order_status.dart';
 
 /// Maps between [Order] and a row of `public.orders`
@@ -31,6 +32,8 @@ abstract final class OrderRow {
       customerInstagram: r['customer_instagram'] as String?,
       senderName: r['sender_name'] as String?,
       recipientName: r['recipient_name'] as String?,
+      source: OrderSource.fromId(r['source'] as String?),
+      paymentMethod: PaymentMethod.fromId(r['payment_method'] as String?),
       deadline: time('deadline'),
       details: details,
       hasPhotos: r['has_photos'] as bool? ?? false,
@@ -46,8 +49,26 @@ abstract final class OrderRow {
     );
   }
 
+  static Map<String, dynamic> fromDraft(OrderDraft d) => {
+    'code': d.code,
+    'kind': d.kind.id,
+    'package_name': d.packageName,
+    'price_syp': d.priceSyp,
+    'status': OrderStatus.newOrder.id,
+    'customer_name': d.customerName,
+    'customer_whatsapp': d.customerWhatsapp,
+    'customer_instagram': d.customerInstagram,
+    'sender_name': d.senderName,
+    'recipient_name': d.recipientName,
+    'source': d.source.id,
+    'deadline': d.deadline?.toUtc().toIso8601String(),
+    'notes': d.notes,
+  };
+
   /// The writable columns. Ids, owner and timestamps are set by Postgres.
   static Map<String, dynamic> toInsert(Order o) => {
+    'source': o.source?.id,
+    'payment_method': o.paymentMethod?.id,
     'code': o.code,
     'kind': o.kind.id,
     'package_name': o.packageName,

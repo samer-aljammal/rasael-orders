@@ -1,5 +1,6 @@
 import '../domain/gift_kind.dart';
 import '../domain/order.dart';
+import '../domain/order_source.dart';
 import '../domain/order_status.dart';
 
 /// Fictional orders for the demo. Every name, number and story is invented;
@@ -47,6 +48,17 @@ abstract final class DemoSeed {
         customerWhatsapp: '963900000${(100 + n * 7).toString().padLeft(3, '0')}',
         senderName: from,
         recipientName: to,
+        // Mostly chats from the bio page, like the real thing.
+        source: switch (n % 5) {
+          0 => OrderSource.form,
+          1 || 3 => OrderSource.instagram,
+          _ => OrderSource.whatsapp,
+        },
+        paymentMethod: paidAt == null
+            ? null
+            : n.isEven
+            ? PaymentMethod.syriatelCash
+            : PaymentMethod.shamCash,
         deadline: deadline,
         details: details,
         hasPhotos: photos,
@@ -241,6 +253,33 @@ abstract final class DemoSeed {
         paidAt: ago(d: 5, h: 1),
         deliveredAt: ago(d: 5),
       ),
+      // -- Last month, so the history has more than one page ----------------
+      for (final (i, (code, kind, price, from, to)) in const [
+        ('R-Q7W2E', GiftKind.letter, 1500, 'باسل', 'نغم'),
+        ('R-V3M8L', GiftKind.cup, 1000, 'دانة', 'وسيم'),
+        ('R-J5T1R', GiftKind.birthday, 1000, 'سلمى', 'آدم'),
+        ('R-G9C4H', GiftKind.wedding, 2000, 'مهند', 'رنا'),
+        ('R-F6B3S', GiftKind.sorry, 1000, 'زياد', 'جنى'),
+        ('R-E2K7P', GiftKind.letter, 1000, 'حسام', 'ليال'),
+      ].indexed)
+        o(
+          code: code,
+          kind: kind,
+          package: price == 1500
+              ? 'مميز'
+              : price == 2000
+              ? 'الأكثر طلباً'
+              : 'الأكثر طلباً',
+          price: price,
+          status: OrderStatus.delivered,
+          customer: from,
+          from: from,
+          to: to,
+          created: ago(d: 24 + i * 3, h: 5),
+          previewSentAt: ago(d: 24 + i * 3, h: 2),
+          paidAt: ago(d: 24 + i * 3, h: 1),
+          deliveredAt: ago(d: 24 + i * 3),
+        ),
       o(
         code: 'R-N2X8B',
         kind: GiftKind.letter,

@@ -29,4 +29,20 @@ class SupabaseOrderRepository implements OrderRepository {
       .from(_table)
       .update({'status': status.id})
       .eq('id', orderId);
+
+  @override
+  Future<Order> create(OrderDraft draft) async {
+    try {
+      final row = await _client
+          .from(_table)
+          .insert(OrderRow.fromDraft(draft))
+          .select()
+          .single();
+      return OrderRow.fromRow(row);
+    } on PostgrestException catch (e) {
+      // 23505: unique_violation on (owner_id, code).
+      if (e.code == '23505') throw DuplicateOrderCode(draft.code);
+      rethrow;
+    }
+  }
 }

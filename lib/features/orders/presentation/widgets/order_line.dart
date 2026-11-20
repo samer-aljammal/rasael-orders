@@ -16,11 +16,15 @@ class OrderLine extends StatelessWidget {
     required this.order,
     required this.now,
     this.onTap,
+    this.showDate = false,
   });
 
   final Order order;
   final DateTime now;
   final VoidCallback? onTap;
+
+  /// History rows show the day the order came in.
+  final bool showDate;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +60,11 @@ class OrderLine extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    '${order.kind.label}  ·  ${Fmt.ltr(order.code)}',
+                    [
+                      if (showDate) Fmt.dayMonth(order.createdAt),
+                      order.kind.label,
+                      Fmt.ltr(order.code),
+                    ].join('  ·  '),
                     style: AppType.caption.copyWith(color: c.inkTertiary),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

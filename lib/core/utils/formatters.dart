@@ -21,6 +21,12 @@ abstract final class Fmt {
   /// Levantine month names, which is what customers write and read.
   static String dayMonth(DateTime d) => '${d.day} ${_months[d.month - 1]}';
 
+  /// «تشرين الثاني 2026», or just the month in the current year.
+  static String month(DateTime d, {DateTime? now}) {
+    final name = _months[d.month - 1];
+    return d.year == (now ?? DateTime.now()).year ? name : '$name ${d.year}';
+  }
+
   static String time(DateTime d) {
     final h = d.hour % 12 == 0 ? 12 : d.hour % 12;
     final m = d.minute.toString().padLeft(2, '0');

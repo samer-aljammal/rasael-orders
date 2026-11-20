@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/auth_cubit.dart';
 import '../../features/auth/presentation/sign_in_screen.dart';
 import '../../features/orders/data/demo_order_repository.dart';
+import '../../features/orders/presentation/history_screen.dart';
 import '../../features/orders/presentation/orders_cubit.dart';
 import '../../features/orders/presentation/orders_screen.dart';
 import '../di/injector.dart';
@@ -14,6 +15,7 @@ import '../di/injector.dart';
 abstract final class Routes {
   static const signIn = '/sign-in';
   static const orders = '/';
+  static const history = '/history';
 }
 
 GoRouter buildRouter(AuthCubit auth) => GoRouter(
@@ -32,22 +34,38 @@ GoRouter buildRouter(AuthCubit auth) => GoRouter(
       pageBuilder: (context, state) =>
           const NoTransitionPage(child: SignInScreen()),
     ),
-    GoRoute(
-      path: Routes.orders,
-      pageBuilder: (context, state) {
+    // One OrdersCubit for every signed-in screen, so home and history share
+    // a single live subscription instead of opening one each.
+    ShellRoute(
+      builder: (context, state, child) {
         final user = auth.state.user!;
-        return NoTransitionPage(
-          child: BlocProvider(
-            // Keyed by user: switching between demo and a real account must
-            // never show one session's orders to the other.
-            key: ValueKey(user.id),
-            create: (_) => OrdersCubit(orderRepositoryFor(user)),
-            child: OrdersScreen(
-              onResetDemo: user.isDemo ? sl<DemoOrderRepository>().reset : null,
-            ),
-          ),
+        return BlocProvider(
+          // Keyed by user: switching between demo and a real account must
+          // never show one session's orders to the other.
+          key: ValueKey(user.id),
+          create: (_) => OrdersCubit(orderRepositoryFor(user)),
+          child: child,
         );
       },
+      routes: [
+        GoRoute(
+          path: Routes.orders,
+          pageBuilder: (context, state) {
+            final demo = auth.state.user?.isDemo ?? false;
+            return NoTransitionPage(
+              child: OrdersScreen(
+                onResetDemo: demo ? sl<DemoOrderRepository>().reset : null,
+              ),
+            );
+          },
+          routes: [
+            GoRoute(
+              path: 'history',
+              builder: (context, state) => const HistoryScreen(),
+            ),
+          ],
+        ),
+      ],
     ),
   ],
 );

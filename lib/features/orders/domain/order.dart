@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import 'gift_kind.dart';
+import 'order_source.dart';
 import 'order_status.dart';
 
 /// One answer from the order form, kept in the order the form asked it.
@@ -45,6 +46,8 @@ class Order extends Equatable {
     this.customerInstagram,
     this.senderName,
     this.recipientName,
+    this.source,
+    this.paymentMethod,
     this.deadline,
     this.details = const [],
     this.hasPhotos = false,
@@ -75,6 +78,10 @@ class Order extends Equatable {
   /// The names as they appear on the page («من» and «لـ»).
   final String? senderName;
   final String? recipientName;
+
+  /// Null for orders imported from before the app recorded it.
+  final OrderSource? source;
+  final PaymentMethod? paymentMethod;
 
   final DateTime? deadline;
   final List<OrderDetail> details;
@@ -137,6 +144,8 @@ class Order extends Equatable {
     customerInstagram: customerInstagram,
     senderName: senderName,
     recipientName: recipientName,
+    source: source,
+    paymentMethod: paymentMethod,
     deadline: deadline,
     details: details,
     hasPhotos: hasPhotos,
@@ -164,3 +173,55 @@ class Order extends Equatable {
   @override
   List<Object?> get props => [id, status, updatedAt];
 }
+
+/// A new order before it has an id or timestamps: what quick add collects.
+class OrderDraft {
+  const OrderDraft({
+    required this.code,
+    required this.kind,
+    required this.packageName,
+    required this.priceSyp,
+    required this.customerName,
+    required this.source,
+    this.customerWhatsapp,
+    this.customerInstagram,
+    this.senderName,
+    this.recipientName,
+    this.deadline,
+    this.notes,
+  });
+
+  final String code;
+  final GiftKind kind;
+  final String packageName;
+  final int priceSyp;
+  final String customerName;
+  final OrderSource source;
+  final String? customerWhatsapp;
+  final String? customerInstagram;
+  final String? senderName;
+  final String? recipientName;
+  final DateTime? deadline;
+  final String? notes;
+
+  /// The order as it exists the moment it is saved.
+  Order toOrder({required String id, required DateTime at}) => Order(
+    id: id,
+    code: code,
+    kind: kind,
+    packageName: packageName,
+    priceSyp: priceSyp,
+    status: OrderStatus.newOrder,
+    customerName: customerName,
+    customerWhatsapp: customerWhatsapp,
+    customerInstagram: customerInstagram,
+    senderName: senderName,
+    recipientName: recipientName,
+    source: source,
+    deadline: deadline,
+    notes: notes,
+    createdAt: at,
+    updatedAt: at,
+  );
+}
+

@@ -39,6 +39,9 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
+# Real customer data (imports, exports). Never committed: the repo is public.
+/private/
+
 # Backend keys: only env/example.json is committed
 /env/*.json
 !/env/example.json

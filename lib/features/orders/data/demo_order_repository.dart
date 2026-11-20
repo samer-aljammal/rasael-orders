@@ -37,6 +37,19 @@ class DemoOrderRepository implements OrderRepository {
     _changes.add(_sorted());
   }
 
+  @override
+  Future<Order> create(OrderDraft draft) async {
+    if (_orders.any((o) => o.code == draft.code)) {
+      throw DuplicateOrderCode(draft.code);
+    }
+    final order = draft.toOrder(id: 'demo-new-${_nextId++}', at: _clock());
+    _orders = [order, ..._orders];
+    _changes.add(_sorted());
+    return order;
+  }
+
+  var _nextId = 1;
+
   /// Starts the demo over with fresh, current-dated orders.
   void reset() {
     _orders = DemoSeed.orders(_clock());

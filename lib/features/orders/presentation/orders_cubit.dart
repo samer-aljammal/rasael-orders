@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../domain/order.dart';
+import '../domain/order_input.dart';
 import '../domain/order_repository.dart';
 import '../domain/order_status.dart';
 
@@ -79,6 +80,18 @@ class OrdersCubit extends Cubit<OrdersState> {
   void retry() {
     emit(const OrdersLoading());
     _listen();
+  }
+
+  /// Saves a new order. [build] receives a fresh code; on the rare clash
+  /// with an existing code it is called again with another one.
+  Future<Order> add(OrderDraft Function(String code) build) async {
+    for (var attempt = 0; ; attempt++) {
+      try {
+        return await _repo.create(build(OrderInput.newCode()));
+      } on DuplicateOrderCode {
+        if (attempt == 2) rethrow;
+      }
+    }
   }
 
   Future<void> moveForward(Order order) async {
