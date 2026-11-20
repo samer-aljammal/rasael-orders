@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rasael_orders/app.dart';
 import 'package:rasael_orders/core/di/injector.dart';
 import 'package:rasael_orders/core/widgets/primary_button.dart';
+import 'package:rasael_orders/features/orders/presentation/order_screen.dart';
 
 /// Runs without SUPABASE_* defines, which is the public demo build.
 void main() {
@@ -72,7 +73,26 @@ void main() {
     // The sheet's confirm button sits above the screen's own bottom button.
     await tester.tap(find.widgetWithText(PrimaryButton, 'وصل الدفع').last);
     await tester.pumpAndSettle();
-    expect(find.text('وصل الدفع · سيريتل كاش'), findsOneWidget);
     expect(find.text('سلّمت الرابط'), findsOneWidget);
+
+    // At «paid» the link reply is offered, filled with her name, and warns
+    // that the page link is still missing.
+    expect(find.text('الرابط بعد الدفع'), findsOneWidget);
+    expect(find.textContaining('هاد رابط رسالة هيا'), findsOneWidget);
+    expect(find.text('ناقص: رابط الصفحة'), findsOneWidget);
+
+    // The timeline at the bottom records how they paid.
+    final orderScroll = find
+        .descendant(
+          of: find.byType(OrderScreen),
+          matching: find.byType(Scrollable),
+        )
+        .first;
+    await tester.scrollUntilVisible(
+      find.text('وصل الدفع · سيريتل كاش'),
+      300,
+      scrollable: orderScroll,
+    );
+    expect(find.text('وصل الدفع · سيريتل كاش'), findsOneWidget);
   });
 }

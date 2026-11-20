@@ -176,9 +176,17 @@ class _TopBar extends StatelessWidget {
             position: PopupMenuPosition.under,
             onSelected: (v) => switch (v) {
               'reset' => onResetDemo?.call(),
+              'replies' => context.push(Routes.replies),
+              'history' => context.push(Routes.history),
               _ => context.read<AuthCubit>().signOut(),
             },
             itemBuilder: (_) => [
+              const PopupMenuItem(
+                value: 'replies',
+                child: Text('الردود الجاهزة'),
+              ),
+              const PopupMenuItem(value: 'history', child: Text('السجل')),
+              const PopupMenuDivider(),
               if (demo && onResetDemo != null)
                 const PopupMenuItem(
                   value: 'reset',

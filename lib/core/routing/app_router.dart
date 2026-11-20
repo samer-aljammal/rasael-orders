@@ -11,12 +11,16 @@ import '../../features/orders/presentation/history_screen.dart';
 import '../../features/orders/presentation/order_screen.dart';
 import '../../features/orders/presentation/orders_cubit.dart';
 import '../../features/orders/presentation/orders_screen.dart';
+import '../../features/replies/data/demo_reply_repository.dart';
+import '../../features/replies/presentation/replies_cubit.dart';
+import '../../features/replies/presentation/replies_screen.dart';
 import '../di/injector.dart';
 
 abstract final class Routes {
   static const signIn = '/sign-in';
   static const orders = '/';
   static const history = '/history';
+  static const replies = '/replies';
   static String order(String id) => '/order/$id';
 }
 
@@ -41,11 +45,14 @@ GoRouter buildRouter(AuthCubit auth) => GoRouter(
     ShellRoute(
       builder: (context, state, child) {
         final user = auth.state.user!;
-        return BlocProvider(
+        return MultiBlocProvider(
           // Keyed by user: switching between demo and a real account must
           // never show one session's orders to the other.
           key: ValueKey(user.id),
-          create: (_) => OrdersCubit(orderRepositoryFor(user)),
+          providers: [
+            BlocProvider(create: (_) => OrdersCubit(orderRepositoryFor(user))),
+            BlocProvider(create: (_) => RepliesCubit(replyRepositoryFor(user))),
+          ],
           child: child,
         );
       },
@@ -56,7 +63,12 @@ GoRouter buildRouter(AuthCubit auth) => GoRouter(
             final demo = auth.state.user?.isDemo ?? false;
             return NoTransitionPage(
               child: OrdersScreen(
-                onResetDemo: demo ? sl<DemoOrderRepository>().reset : null,
+                onResetDemo: demo
+                    ? () {
+                        sl<DemoOrderRepository>().reset();
+                        sl<DemoReplyRepository>().reset();
+                      }
+                    : null,
               ),
             );
           },
@@ -64,6 +76,10 @@ GoRouter buildRouter(AuthCubit auth) => GoRouter(
             GoRoute(
               path: 'history',
               builder: (context, state) => const HistoryScreen(),
+            ),
+            GoRoute(
+              path: 'replies',
+              builder: (context, state) => const RepliesScreen(),
             ),
             GoRoute(
               path: 'order/:id',

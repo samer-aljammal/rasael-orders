@@ -13,6 +13,7 @@ import '../../../core/widgets/money.dart';
 import '../../../core/widgets/motion.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../../core/widgets/states.dart';
+import '../../replies/presentation/order_replies.dart';
 import '../domain/order.dart';
 import '../domain/order_source.dart';
 import '../domain/order_status.dart';
@@ -298,6 +299,10 @@ class _OrderView extends StatelessWidget {
                   style: AppType.caption.copyWith(color: c.inkTertiary),
                 ),
               ),
+
+              // -- The message to send now -----------------------------------
+              const _Section('ردود جاهزة'),
+              OrderReplies(order: order),
 
               // -- Customer ------------------------------------------------
               const _Section('الزبون'),
