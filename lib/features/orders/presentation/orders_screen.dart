@@ -155,21 +155,31 @@ class _TopBar extends StatelessWidget {
         children: [
           const Wordmark(size: 20),
           const Spacer(),
+          // Gives way first on narrow phones and at large text sizes.
           if (demo)
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.sm + 2,
-                vertical: 3,
-              ),
-              decoration: BoxDecoration(
-                border: Border.all(color: c.borderStrong),
-                borderRadius: BorderRadius.circular(AppRadius.pill),
-              ),
-              child: Text(
-                'نسخة تجريبية',
-                style: AppType.caption.copyWith(color: c.inkSecondary),
+            Flexible(
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm + 2,
+                  vertical: 3,
+                ),
+                decoration: BoxDecoration(
+                  border: Border.all(color: c.borderStrong),
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                ),
+                child: Text(
+                  'نسخة تجريبية',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppType.caption.copyWith(color: c.inkSecondary),
+                ),
               ),
             ),
+          IconButton(
+            tooltip: 'الأرقام',
+            onPressed: () => context.push(Routes.dashboard),
+            icon: Icon(Icons.bar_chart_rounded, color: c.inkSecondary),
+          ),
           PopupMenuButton<String>(
             tooltip: 'القائمة',
             icon: Icon(Icons.more_horiz_rounded, color: c.inkSecondary),

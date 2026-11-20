@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/auth/presentation/auth_cubit.dart';
 import '../../features/auth/presentation/sign_in_screen.dart';
+import '../../features/dashboard/presentation/dashboard_screen.dart';
 import '../../features/orders/data/demo_order_repository.dart';
 import '../../features/orders/presentation/history_screen.dart';
 import '../../features/orders/presentation/order_screen.dart';
@@ -21,6 +22,7 @@ abstract final class Routes {
   static const orders = '/';
   static const history = '/history';
   static const replies = '/replies';
+  static const dashboard = '/dashboard';
   static String order(String id) => '/order/$id';
 }
 
@@ -76,6 +78,10 @@ GoRouter buildRouter(AuthCubit auth) => GoRouter(
             GoRoute(
               path: 'history',
               builder: (context, state) => const HistoryScreen(),
+            ),
+            GoRoute(
+              path: 'dashboard',
+              builder: (context, state) => const DashboardScreen(),
             ),
             GoRoute(
               path: 'replies',
