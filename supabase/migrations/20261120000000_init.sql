@@ -190,6 +190,18 @@ create policy "owner manages replies" on public.reply_templates
   with check (owner_id = (select auth.uid()));
 
 -- ---------------------------------------------------------------------------
+-- API access. New tables are not exposed automatically; grant exactly what
+-- the app uses, to signed-in users only. Anonymous visitors get nothing.
+-- RLS above still narrows every one of these to the owner's own rows.
+-- ---------------------------------------------------------------------------
+
+revoke all on public.orders, public.order_events, public.reply_templates from anon;
+
+grant select, insert, update, delete on public.orders          to authenticated;
+grant select                         on public.order_events    to authenticated;
+grant select, insert, update, delete on public.reply_templates to authenticated;
+
+-- ---------------------------------------------------------------------------
 -- Realtime: the order list updates live across phone and web
 -- ---------------------------------------------------------------------------
 
