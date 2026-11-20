@@ -1,11 +1,13 @@
 {
-    "name": "rasael_orders",
-    "short_name": "rasael_orders",
+    "name": "رسائل · الطلبات",
+    "short_name": "رسائل",
+    "lang": "ar",
+    "dir": "rtl",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "Rasael Orders: order pipeline and business dashboard for Rasael.",
+    "background_color": "#F7F2EA",
+    "theme_color": "#561A27",
+    "description": "دفتر طلبات رسائل: كل طلب من أول رسالة لحد ما يوصل الرابط.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

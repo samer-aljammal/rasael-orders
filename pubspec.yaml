@@ -37,6 +37,11 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  # Asset generators, run on demand, not used at runtime:
+  #   dart run flutter_launcher_icons
+  #   dart run flutter_native_splash:create
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.6
 
 flutter:
   uses-material-design: true
@@ -56,3 +61,33 @@ flutter:
     - family: Messiri
       fonts:
         - asset: assets/fonts/ElMessiri-Variable.ttf
+
+# App icon: the Rasael envelope and heart seal on wine, without the wordmark
+# (unreadable at icon size; the launcher label says «رسائل»).
+# Source art: assets/icon/, cut from the brand logo.
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/icon/icon.png
+  adaptive_icon_background: "#561A27"
+  adaptive_icon_foreground: assets/icon/icon_foreground.png
+  adaptive_icon_foreground_inset: 0
+  remove_alpha_ios: true
+  web:
+    generate: true
+    image_path: assets/icon/icon.png
+    background_color: "#561A27"
+    theme_color: "#561A27"
+
+# Launch screen in the app's own page colours, so Flutter's first frame
+# continues it instead of flashing white.
+flutter_native_splash:
+  color: "#F7F2EA"
+  color_dark: "#141011"
+  image: assets/icon/splash.png
+  android_12:
+    image: assets/icon/icon_foreground.png
+    icon_background_color: "#561A27"
+    color: "#F7F2EA"
+    color_dark: "#141011"
+  web: false

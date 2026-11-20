@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Supabase: orders, sign-in and live updates. Release builds only get
+         network access when it is declared here. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:label="rasael_orders"
+        android:label="رسائل"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -40,6 +43,12 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- url_launcher: open the customer's WhatsApp / Instagram chat and
+             the delivered page (Android 11+ package visibility). -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
         </intent>
     </queries>
 </manifest>
