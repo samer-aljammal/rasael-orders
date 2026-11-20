@@ -27,6 +27,9 @@ dependencies:
   # app runs on the in-memory demo repository.
   supabase_flutter: ^2.8.0
 
+  # Opening the customer's WhatsApp / Instagram chat and the delivered page
+  url_launcher: ^6.3.2
+
   # Utilities
   intl: any
 

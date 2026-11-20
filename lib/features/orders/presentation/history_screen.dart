@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../core/routing/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
@@ -14,7 +15,6 @@ import '../domain/order_search.dart';
 import '../domain/order_status.dart';
 import 'orders_cubit.dart';
 import 'widgets/order_line.dart';
-import 'widgets/stage_sheet.dart';
 
 /// Every order ever, newest first, grouped by month like a ledger, with a
 /// search that understands how Arabic names actually get typed.
@@ -165,18 +165,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  void _open(BuildContext context, Order order, DateTime now) {
-    final cubit = context.read<OrdersCubit>();
-    StageSheet.show(
-      context,
-      order: order,
-      now: now,
-      onAdvance: () async {
-        await cubit.moveForward(order);
-        HapticFeedback.lightImpact();
-      },
-    );
-  }
+  void _open(BuildContext context, Order order, DateTime now) =>
+      context.push(Routes.order(order.id));
 }
 
 /// «تشرين الثاني · 14 طلب ........ 18,500 ل.س»

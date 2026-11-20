@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/order.dart';
 import '../domain/order_repository.dart';
+import '../domain/order_source.dart';
 import '../domain/order_status.dart';
 import 'order_row.dart';
 
@@ -25,10 +26,25 @@ class SupabaseOrderRepository implements OrderRepository {
   /// `updated_at`, `preview_sent_at`, `paid_at` and `delivered_at`, and
   /// writes the history row, so two devices can never disagree on them.
   @override
-  Future<void> moveTo(String orderId, OrderStatus status) => _client
+  Future<void> moveTo(
+    String orderId,
+    OrderStatus status, {
+    PaymentMethod? paidWith,
+  }) => _client
       .from(_table)
-      .update({'status': status.id})
+      .update({
+        'status': status.id,
+        if (paidWith != null) 'payment_method': paidWith.id,
+      })
       .eq('id', orderId);
+
+  @override
+  Future<void> setPageUrl(String orderId, String? url) =>
+      _client.from(_table).update({'page_url': url}).eq('id', orderId);
+
+  @override
+  Future<void> setNotes(String orderId, String? notes) =>
+      _client.from(_table).update({'notes': notes}).eq('id', orderId);
 
   @override
   Future<Order> create(OrderDraft draft) async {

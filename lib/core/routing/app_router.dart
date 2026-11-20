@@ -8,6 +8,7 @@ import '../../features/auth/presentation/auth_cubit.dart';
 import '../../features/auth/presentation/sign_in_screen.dart';
 import '../../features/orders/data/demo_order_repository.dart';
 import '../../features/orders/presentation/history_screen.dart';
+import '../../features/orders/presentation/order_screen.dart';
 import '../../features/orders/presentation/orders_cubit.dart';
 import '../../features/orders/presentation/orders_screen.dart';
 import '../di/injector.dart';
@@ -16,6 +17,7 @@ abstract final class Routes {
   static const signIn = '/sign-in';
   static const orders = '/';
   static const history = '/history';
+  static String order(String id) => '/order/$id';
 }
 
 GoRouter buildRouter(AuthCubit auth) => GoRouter(
@@ -62,6 +64,11 @@ GoRouter buildRouter(AuthCubit auth) => GoRouter(
             GoRoute(
               path: 'history',
               builder: (context, state) => const HistoryScreen(),
+            ),
+            GoRoute(
+              path: 'order/:id',
+              builder: (context, state) =>
+                  OrderScreen(orderId: state.pathParameters['id']!),
             ),
           ],
         ),

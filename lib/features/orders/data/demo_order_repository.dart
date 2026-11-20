@@ -2,6 +2,7 @@ import 'dart:async';
 
 import '../domain/order.dart';
 import '../domain/order_repository.dart';
+import '../domain/order_source.dart';
 import '../domain/order_status.dart';
 import 'demo_seed.dart';
 
@@ -29,11 +30,25 @@ class DemoOrderRepository implements OrderRepository {
   }
 
   @override
-  Future<void> moveTo(String orderId, OrderStatus status) async {
-    _orders = [
-      for (final o in _orders)
-        o.id == orderId ? o.movedTo(status, _clock()) : o,
-    ];
+  Future<void> moveTo(
+    String orderId,
+    OrderStatus status, {
+    PaymentMethod? paidWith,
+  }) async => _edit(orderId, (o) {
+    final moved = o.movedTo(status, _clock());
+    return paidWith == null ? moved : moved.copyWith(paymentMethod: () => paidWith);
+  });
+
+  @override
+  Future<void> setPageUrl(String orderId, String? url) async =>
+      _edit(orderId, (o) => o.copyWith(pageUrl: () => url, updatedAt: _clock()));
+
+  @override
+  Future<void> setNotes(String orderId, String? notes) async =>
+      _edit(orderId, (o) => o.copyWith(notes: () => notes, updatedAt: _clock()));
+
+  void _edit(String id, Order Function(Order) change) {
+    _orders = [for (final o in _orders) o.id == id ? change(o) : o];
     _changes.add(_sorted());
   }
 

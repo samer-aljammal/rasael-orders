@@ -31,6 +31,16 @@ enum OrderStatus {
     delivered || cancelled => null,
   };
 
+  /// One step back, to undo a mistaken tap. Cancelled orders reopen as new.
+  OrderStatus? get previous => switch (this) {
+    newOrder => null,
+    inProgress => newOrder,
+    previewSent => inProgress,
+    paid => previewSent,
+    delivered => paid,
+    cancelled => newOrder,
+  };
+
   /// The verb on the button that moves an order out of this stage.
   String? get nextAction => switch (this) {
     newOrder => 'بلّش الشغل',

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rasael_orders/app.dart';
 import 'package:rasael_orders/core/di/injector.dart';
+import 'package:rasael_orders/core/widgets/primary_button.dart';
 
 /// Runs without SUPABASE_* defines, which is the public demo build.
 void main() {
@@ -54,5 +55,24 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('وسام ← هيا'), findsOneWidget);
     expect(find.text('كرم ← جود'), findsNothing);
+
+    // Order screen: walk the new order to paid, choosing the payment method.
+    await tester.tap(find.text('وسام ← هيا'));
+    await tester.pumpAndSettle();
+    expect(find.text('الزبون'), findsOneWidget);
+    for (final step in ['بلّش الشغل', 'أرسلت المعاينة']) {
+      await tester.tap(find.text(step));
+      await tester.pumpAndSettle();
+    }
+    await tester.tap(find.text('وصل الدفع'));
+    await tester.pumpAndSettle();
+    expect(find.text('كيف دفع؟'), findsOneWidget);
+    await tester.tap(find.text('سيريتل كاش'));
+    await tester.pump();
+    // The sheet's confirm button sits above the screen's own bottom button.
+    await tester.tap(find.widgetWithText(PrimaryButton, 'وصل الدفع').last);
+    await tester.pumpAndSettle();
+    expect(find.text('وصل الدفع · سيريتل كاش'), findsOneWidget);
+    expect(find.text('سلّمت الرابط'), findsOneWidget);
   });
 }

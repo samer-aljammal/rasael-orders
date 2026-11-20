@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,7 +16,6 @@ import 'orders_cubit.dart';
 import 'widgets/attention_hero.dart';
 import 'widgets/order_line.dart';
 import 'widgets/quick_add_sheet.dart';
-import 'widgets/stage_sheet.dart';
 
 /// Home: what needs attention, then every open order.
 ///
@@ -204,18 +202,8 @@ class _Loaded extends StatelessWidget {
   final OrdersLoaded state;
   final VoidCallback? onResetDemo;
 
-  void _openStage(BuildContext context, Order order) {
-    final cubit = context.read<OrdersCubit>();
-    StageSheet.show(
-      context,
-      order: order,
-      now: state.now,
-      onAdvance: () async {
-        await cubit.moveForward(order);
-        HapticFeedback.lightImpact();
-      },
-    );
-  }
+  void _openStage(BuildContext context, Order order) =>
+      context.push(Routes.order(order.id));
 
   @override
   Widget build(BuildContext context) {

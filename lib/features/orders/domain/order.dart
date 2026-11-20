@@ -126,12 +126,17 @@ class Order extends Equatable {
     return null;
   }
 
+  /// Nullable fields take a getter, so a value can be set *or* cleared:
+  /// `copyWith(pageUrl: () => null)` clears it, omitting it keeps it.
   Order copyWith({
     OrderStatus? status,
     DateTime? updatedAt,
     DateTime? previewSentAt,
     DateTime? paidAt,
     DateTime? deliveredAt,
+    PaymentMethod? Function()? paymentMethod,
+    String? Function()? pageUrl,
+    String? Function()? notes,
   }) => Order(
     id: id,
     code: code,
@@ -145,13 +150,13 @@ class Order extends Equatable {
     senderName: senderName,
     recipientName: recipientName,
     source: source,
-    paymentMethod: paymentMethod,
+    paymentMethod: paymentMethod != null ? paymentMethod() : this.paymentMethod,
     deadline: deadline,
     details: details,
     hasPhotos: hasPhotos,
     wantsMusic: wantsMusic,
-    notes: notes,
-    pageUrl: pageUrl,
+    notes: notes != null ? notes() : this.notes,
+    pageUrl: pageUrl != null ? pageUrl() : this.pageUrl,
     previewUrl: previewUrl,
     createdAt: createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
@@ -171,7 +176,14 @@ class Order extends Equatable {
   );
 
   @override
-  List<Object?> get props => [id, status, updatedAt];
+  List<Object?> get props => [
+    id,
+    status,
+    updatedAt,
+    paymentMethod,
+    pageUrl,
+    notes,
+  ];
 }
 
 /// A new order before it has an id or timestamps: what quick add collects.

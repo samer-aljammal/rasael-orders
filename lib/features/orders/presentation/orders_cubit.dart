@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../domain/order.dart';
 import '../domain/order_input.dart';
 import '../domain/order_repository.dart';
+import '../domain/order_source.dart';
 import '../domain/order_status.dart';
 
 sealed class OrdersState extends Equatable {
@@ -94,11 +95,30 @@ class OrdersCubit extends Cubit<OrdersState> {
     }
   }
 
-  Future<void> moveForward(Order order) async {
+  Future<void> moveForward(Order order, {PaymentMethod? paidWith}) async {
     final next = order.status.next;
     if (next == null) return;
-    await _repo.moveTo(order.id, next);
+    await _repo.moveTo(order.id, next, paidWith: paidWith);
   }
+
+  /// Undoes a mistaken tap.
+  Future<void> moveBack(Order order) async {
+    final prev = order.status.previous;
+    if (prev == null) return;
+    await _repo.moveTo(order.id, prev);
+  }
+
+  Future<void> cancel(Order order) =>
+      _repo.moveTo(order.id, OrderStatus.cancelled);
+
+  Future<void> setPageUrl(Order order, String? url) =>
+      _repo.setPageUrl(order.id, _blankToNull(url));
+
+  Future<void> setNotes(Order order, String? notes) =>
+      _repo.setNotes(order.id, _blankToNull(notes));
+
+  static String? _blankToNull(String? s) =>
+      (s == null || s.trim().isEmpty) ? null : s.trim();
 
   @override
   Future<void> close() async {
