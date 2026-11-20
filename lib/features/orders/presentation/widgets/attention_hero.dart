@@ -98,7 +98,7 @@ class AttentionHero extends StatelessWidget {
   static String _openNoun(int n) => switch (n) {
     1 => 'طلب مفتوح',
     2 => 'طلبين مفتوحين',
-    >= 3 && <= 10 => 'طلبات مفتوحة',
+    0 || (>= 3 && <= 10) => 'طلبات مفتوحة',
     _ => 'طلب مفتوح',
   };
 
